@@ -56,12 +56,15 @@ jobs:
           - '29.4'
           - '30.1'
           - 'snapshot'
-        # The sources cannot be made warning-free without changing
-        # behaviour: a dash --reduce expansion triggers a "value
-        # unused" warning on every Emacs version, and Emacs 30.1+
-        # additionally flags obsolete defadvice and cycle-spacing
-        # arity. Byte-compilation is therefore run without -Werror;
-        # the files must still byte-compile and load successfully.
+        # Byte-compilation runs with warnings treated as errors
+        # (byte-compile-error-on-warn). The sources are warning-free on
+        # every supported Emacs version: the dash --reduce that
+        # triggered a spurious "value unused" warning was replaced by an
+        # equivalent --min-by, the 3-arg cycle-spacing calls (dropped in
+        # Emacs 29.1) were replaced by the equivalent just-one-space,
+        # and the legacy defadvice forms (obsolete as of Emacs 30.1) are
+        # wrapped in with-suppressed-warnings since they intentionally
+        # keep the legacy advice mechanism.
         include:
           - emacs_version: 'snapshot'
             allow_failure: true
@@ -85,20 +88,22 @@ jobs:
         --eval "(package-refresh-contents)"
         --eval "(package-install 'dash)"
 
-    - name: Byte-compile and load
+    - name: Byte-compile (-Werror) and load
       if: matrix.allow_failure != true
       run: |
         emacs --batch --eval "(package-initialize)" \
+          --eval "(setq byte-compile-error-on-warn t)" \
           -L . -f batch-byte-compile \
           smartparens.el smartparens-*[^pkg].el
         emacs --batch --eval "(package-initialize)" -L . \
           --eval "(require 'smartparens)" \
           --eval "(require 'smartparens-config)"
 
-    - name: Byte-compile and load (allow failure)
+    - name: Byte-compile (-Werror) and load (allow failure)
       if: matrix.allow_failure == true
       run: |
         emacs --batch --eval "(package-initialize)" \
+          --eval "(setq byte-compile-error-on-warn t)" \
           -L . -f batch-byte-compile \
           smartparens.el smartparens-*[^pkg].el || true
         emacs --batch --eval "(package-initialize)" -L . \
