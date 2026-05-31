@@ -54,12 +54,15 @@
                (list mode 'regexp
                      (rx (zero-or-more (or word (syntax symbol)))))))
 
-(defadvice sp-backward-kill-symbol (around sp-ess-backward-kill-symbol activate)
-  "#821 For the purpose of killing words and symbols, we remove
+;; `defadvice' is obsolete as of Emacs 30.1; kept deliberately because
+;; the advice relies on `ad-do-it' to wrap the original command.
+(with-suppressed-warnings ((obsolete defadvice))
+  (defadvice sp-backward-kill-symbol (around sp-ess-backward-kill-symbol activate)
+    "#821 For the purpose of killing words and symbols, we remove
 the prefix resolution because it is not necessary.  We want to
 treat function prefix as word or symbol to be deleted."
-  (let ((sp-sexp-prefix nil))
-    ad-do-it))
+    (let ((sp-sexp-prefix nil))
+      ad-do-it)))
 
 ;; slurping follows Google's R style guide
 ;; see https://google.github.io/styleguide/Rguide.xml

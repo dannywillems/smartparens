@@ -1594,22 +1594,27 @@ This check is added to the special hook
 
 ;; TODO: this function was removed from Emacs, we should get rid of
 ;; the advice in time.
-(defadvice cua-replace-region (around fix-sp-wrap activate)
-  "Fix `sp-wrap' in `cua-selection-mode'."
-  (if (and smartparens-mode (sp-wrap--can-wrap-p))
-      (cua--fallback)
-    ad-do-it))
+;; `defadvice' is obsolete as of Emacs 30.1 but is kept here
+;; deliberately: the legacy advices below rely on `ad-do-it' to wrap
+;; the original command, and porting them to `advice-add' is left as a
+;; separate behaviour-affecting change (see the TODO above).
+(with-suppressed-warnings ((obsolete defadvice))
+  (defadvice cua-replace-region (around fix-sp-wrap activate)
+    "Fix `sp-wrap' in `cua-selection-mode'."
+    (if (and smartparens-mode (sp-wrap--can-wrap-p))
+        (cua--fallback)
+      ad-do-it))
 
-(defadvice cua-delete-region (around fix-sp-delete-region activate)
-  "If `smartparens-strict-mode' is enabled, perform a region
+  (defadvice cua-delete-region (around fix-sp-delete-region activate)
+    "If `smartparens-strict-mode' is enabled, perform a region
 check before deleting."
-  (if (and smartparens-mode smartparens-strict-mode)
-      (progn
-        (unless (or current-prefix-arg
-                    (sp-region-ok-p (region-beginning) (region-end)))
-          (user-error (sp-message :unbalanced-region :return)))
-        ad-do-it)
-    ad-do-it))
+    (if (and smartparens-mode smartparens-strict-mode)
+        (progn
+          (unless (or current-prefix-arg
+                      (sp-region-ok-p (region-beginning) (region-end)))
+            (user-error (sp-message :unbalanced-region :return)))
+          ad-do-it)
+      ad-do-it)))
 
 
 
@@ -9965,28 +9970,34 @@ has been created."
 
 
 ;; global initialization
-(defadvice delete-backward-char (before sp-delete-pair-advice activate)
-  (save-match-data
-    (sp-delete-pair (ad-get-arg 0))))
-(defadvice haskell-indentation-delete-backward-char (before sp-delete-pair-advice activate)
-  (save-match-data
-    (sp-delete-pair (ad-get-arg 0))))
+;; `defadvice' is obsolete as of Emacs 30.1; the advices below are kept
+;; on the legacy advice mechanism on purpose because they rely on
+;; `ad-get-arg' and `ad-return-value'.  Suppress only the obsolete-macro
+;; warning here without changing behaviour.
+(with-suppressed-warnings ((obsolete defadvice))
+  (defadvice delete-backward-char (before sp-delete-pair-advice activate)
+    (save-match-data
+      (sp-delete-pair (ad-get-arg 0))))
+  (defadvice haskell-indentation-delete-backward-char (before sp-delete-pair-advice activate)
+    (save-match-data
+      (sp-delete-pair (ad-get-arg 0)))))
 (sp--set-base-key-bindings)
 (sp--update-override-key-bindings)
 
-(defadvice company--insert-candidate (after sp-company--insert-candidate activate)
-  "If `smartparens-mode' is active, we check if the completed string
+(with-suppressed-warnings ((obsolete defadvice))
+  (defadvice company--insert-candidate (after sp-company--insert-candidate activate)
+    "If `smartparens-mode' is active, we check if the completed string
 has a pair definition.  If so, we insert the closing pair."
-  (when (and ad-return-value
-             smartparens-mode
-             (not (sp-get-enclosing-sexp)))
-    (sp-insert-pair))
-  ad-return-value)
+    (when (and ad-return-value
+               smartparens-mode
+               (not (sp-get-enclosing-sexp)))
+      (sp-insert-pair))
+    ad-return-value)
 
-(defadvice hippie-expand (after sp-auto-complete-advice activate)
-  (when (and smartparens-mode
-             (not (sp-get-enclosing-sexp)))
-    (sp-insert-pair)))
+  (defadvice hippie-expand (after sp-auto-complete-advice activate)
+    (when (and smartparens-mode
+               (not (sp-get-enclosing-sexp)))
+      (sp-insert-pair))))
 
 (defvar sp--mc/cursor-specific-vars
   '(
