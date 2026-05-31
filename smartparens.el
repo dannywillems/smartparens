@@ -2953,7 +2953,13 @@ argument TYPE restrict overlays to only those with given type."
      ((not overlays) nil)
      ((not (cdr overlays)) (car overlays))
      (t
-      (--reduce (if (< (sp--get-overlay-length it) (sp--get-overlay-length acc)) it acc) overlays)))))
+      ;; Return the shortest overlay, keeping the earliest one on ties.
+      ;; `--min-by' keeps the accumulator (earlier element) when the
+      ;; predicate is non-nil, so `>=' reproduces the previous
+      ;; `--reduce'-based selection exactly while avoiding a spurious
+      ;; "value unused" byte-compile warning from the `--reduce'
+      ;; expansion.
+      (--min-by (>= (sp--get-overlay-length it) (sp--get-overlay-length other)) overlays)))))
 
 (defun sp--pair-overlay-create (start end id)
   "Create an overlay over the currently inserted pair.
