@@ -3031,10 +3031,10 @@ Also remove all pair overlays if point moved backwards and
   (when sp-pair-overlay-list
     (setq sp-previous-point (point))))
 
-(defun sp--reset-memoization (&rest ignored)
+(defun sp--reset-memoization (&rest _ignored)
   "Reset memoization as a safety precaution.
 
-IGNORED is a dummy argument used to eat up arguments passed from
+The dummy argument is used to eat up arguments passed from
 the hook where this is executed."
   (setf (sp-state-last-syntax-ppss-point sp-state) nil
         (sp-state-last-syntax-ppss-result sp-state) nil))
@@ -3526,7 +3526,7 @@ extra boundary conditions depending on parens."
          (end (cadr parens)))
     (sp--wrap-regexp (regexp-opt strings) start end)))
 
-(defun sp--strict-regexp-opt (strings &optional ignored)
+(defun sp--strict-regexp-opt (strings &optional _ignored)
   "Like regexp-opt, but with extra boundary conditions to ensure
 that the strings are not matched in-symbol."
   (if strings
@@ -5169,12 +5169,10 @@ By default, this is enabled in all modes derived from
         (ps (if back (1- (point-min)) (1+ (point-max))))
         ;; start of string delimiter
         (ss (if back (1- (point-min)) (1+ (point-max))))
-        (string-delim nil)
-        (paired-delim nil))
+        (string-delim nil))
     (setq ps (if (equal pre "") ps
                (or (--when-let (save-excursion
                                  (sp--find-next-paired-delimiter pre search-fn))
-                     (setq paired-delim (match-string 0))
                      (save-match-data
                        (set-match-data it)
                        (if back (match-beginning 0) (match-end 0))))
@@ -7783,7 +7781,6 @@ Examples:
   (let ((inc (if forward '1+ '1-))
         (dec (if forward '1- '1+))
         (forward-fn (if forward 'forward-char 'backward-char))
-        (next-char-fn (if forward 'following-char 'preceding-char))
         (looking (if forward 'sp--looking-at 'sp--looking-back))
         (prefix-fn (if forward 'sp--get-suffix 'sp--get-prefix))
         (eob-test (if forward '(eobp) '(bobp)))

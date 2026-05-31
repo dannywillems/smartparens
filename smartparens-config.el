@@ -71,7 +71,7 @@ ID, ACTION, CONTEXT."
               (not (looking-at "[?.,;!]"))))))))
 
 (defun sp-lisp-insert-space-after-slurp (_id action _context)
-  (-let (((&plist :ok-orig :next-thing) sp-handler-context))
+  (-let (((&plist :ok-orig) sp-handler-context))
     (when (and (eq action 'slurp-forward)
                (sp-get ok-orig (/= :beg-in :end-in)))
       (save-excursion
