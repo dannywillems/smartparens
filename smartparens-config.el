@@ -45,6 +45,10 @@
 
 (require 'smartparens)
 
+(declare-function org-in-src-block-p "org")
+(declare-function org-element-at-point "org-element")
+(declare-function org-element-property "org-element-ast")
+
 (defun sp-lisp-invalid-hyperlink-p (_id action _context)
   "Test if there is an invalid hyperlink in a Lisp docstring.
 ID, ACTION, CONTEXT."

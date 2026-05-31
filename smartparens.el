@@ -718,6 +718,10 @@ default, which should be the most verbose option available.")
   :group 'editing
   :prefix "sp-")
 
+;; Forward declaration: `smartparens-strict-mode' is defined below via
+;; `define-minor-mode' but referenced in `smartparens-mode' above it.
+(defvar smartparens-strict-mode)
+
 ;;;###autoload
 (define-minor-mode smartparens-mode
   "Toggle smartparens mode.

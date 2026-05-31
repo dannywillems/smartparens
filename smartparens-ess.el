@@ -40,6 +40,7 @@
 (require 'rx)
 
 (defvar ess-roxy-str)
+(defvar ess-roxy-re)
 
 (declare-function ess-roxy-indent-on-newline "ess-roxy")
 
