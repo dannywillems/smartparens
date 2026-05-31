@@ -1915,7 +1915,8 @@ The raw syntax descriptor is retrieved using `syntax-after' and
 the code is decoded with `syntax-class'."
   (setq p (or p (point)))
   (let ((parse-sexp-lookup-properties t))
-    (if-let ((syntax (syntax-after p)))
+    (let ((syntax (syntax-after p)))
+      (if syntax
         (sp--syntax-class-to-char (syntax-class syntax))
       ;; This is a fallback compatible with (char-syntax
       ;; (following-char)) or `previous-char'.  They return 0 as the
@@ -1923,7 +1924,7 @@ the code is decoded with `syntax-class'."
       ;; (probably to make the first/last character of the buffer have
       ;; symbol boundary so the whole word counts as a symbol, including
       ;; the very first character)
-      ?_)))
+      ?_))))
 
 (defun sp-syntax-after (&optional p)
   "Get syntax descriptor of a character after P.
@@ -1954,10 +1955,11 @@ flag (20).  The flag must be ignored once inside a symbol, this
 is done by passing CHECK-PREFIX-FLAG as nil."
   (setq p (or p (point)))
   (let ((parse-sexp-lookup-properties t))
-    (when-let ((syntax (syntax-after p)))
-      (or (= (syntax-class syntax) 6)
-          (and check-prefix-flag
-               (/= 0 (logand (ash 1 20) (car syntax))))))))
+    (let ((syntax (syntax-after p)))
+      (when syntax
+        (or (= (syntax-class syntax) 6)
+            (and check-prefix-flag
+                 (/= 0 (logand (ash 1 20) (car syntax)))))))))
 
 (defun sp-syntax-before-is-prefix (check-prefix-flag &optional p)
   "Check that the character before P has prefix syntax.
@@ -1968,10 +1970,11 @@ flag (20).  The flag must be ignored once inside a symbol, this
 is done by passing CHECK-PREFIX-FLAG as nil."
   (setq p (or p (point)))
   (let ((parse-sexp-lookup-properties t))
-    (when-let ((syntax (syntax-after (1- p))))
-      (or (= (syntax-class syntax) 6)
-          (and check-prefix-flag
-               (/= 0 (logand (ash 1 20) (car syntax))))))))
+    (let ((syntax (syntax-after (1- p))))
+      (when syntax
+        (or (= (syntax-class syntax) 6)
+            (and check-prefix-flag
+                 (/= 0 (logand (ash 1 20) (car syntax)))))))))
 
 (defun sp-syntax-after-is-word-or-symbol (&optional p)
   "Check that the character after P has word or symbol syntax.
