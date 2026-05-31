@@ -1976,7 +1976,7 @@ is done by passing CHECK-PREFIX-FLAG as nil."
 (defun sp-syntax-after-is-word-or-symbol (&optional p)
   "Check that the character after P has word or symbol syntax.
 
-In case the character has a special syntax flag 'p', meaning a
+In case the character has a special syntax flag \='p\=', meaning a
 prefix, it is not recognized as a word or symbol syntax even when
 regularly the character would be (for example according to the
 syntax table)."
@@ -1987,7 +1987,7 @@ syntax table)."
 (defun sp-syntax-before-is-word-or-symbol (check-prefix-flag &optional p)
   "Check that the character before P has word or symbol syntax.
 
-In case the character has a special syntax flag 'p', meaning a
+In case the character has a special syntax flag \='p\=', meaning a
 prefix, it is not recognized as a word or symbol syntax even when
 regularly the character would be (for example according to the
 syntax table)."
@@ -3955,7 +3955,7 @@ pairs insertable by trigger are returned.
 
 ACTION is an implementation detail.  Usually it has the value
 \\='insert when we determine pairs to insert.  On repeated wrapping
-however we pass the value 'wrap.  This will be refactored away in
+however we pass the value \\='wrap.  This will be refactored away in
 the upcoming version."
   (setq looking-fn (or looking-fn 'sp--looking-back-p))
   (setq action (or action 'insert))
@@ -8175,7 +8175,7 @@ Examples:
 
   (f|oo [bar] baz) -> (|)
 
-  {'f|oo': 'bar'}  -> {'|': 'bar'}"
+  {\\='f|oo\\=': \\='bar\\='}  -> {\\='|\\=': \\='bar\\='}"
   (interactive "*")
   (-when-let (ok (sp-get-enclosing-sexp))
     (sp-get ok
