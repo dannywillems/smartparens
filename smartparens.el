@@ -1957,7 +1957,7 @@ is done by passing CHECK-PREFIX-FLAG as nil."
     (when-let ((syntax (syntax-after p)))
       (or (= (syntax-class syntax) 6)
           (and check-prefix-flag
-               (/= 0 (logand (lsh 1 20) (car syntax))))))))
+               (/= 0 (logand (ash 1 20) (car syntax))))))))
 
 (defun sp-syntax-before-is-prefix (check-prefix-flag &optional p)
   "Check that the character before P has prefix syntax.
@@ -1971,7 +1971,7 @@ is done by passing CHECK-PREFIX-FLAG as nil."
     (when-let ((syntax (syntax-after (1- p))))
       (or (= (syntax-class syntax) 6)
           (and check-prefix-flag
-               (/= 0 (logand (lsh 1 20) (car syntax))))))))
+               (/= 0 (logand (ash 1 20) (car syntax))))))))
 
 (defun sp-syntax-after-is-word-or-symbol (&optional p)
   "Check that the character after P has word or symbol syntax.
@@ -2030,13 +2030,13 @@ If optional argument P is present test this instead off point."
             ;; know if we are inside a comment or not (e.g. / can be a
             ;; division or comment starter...).
             (-when-let (s (car (syntax-after p)))
-              (or (and (/= 0 (logand (lsh 1 16) s))
+              (or (and (/= 0 (logand (ash 1 16) s))
                        (nth 4 (syntax-ppss (+ p 2))))
-                  (and (/= 0 (logand (lsh 1 17) s))
+                  (and (/= 0 (logand (ash 1 17) s))
                        (nth 4 (syntax-ppss (+ p 1))))
-                  (and (/= 0 (logand (lsh 1 18) s))
+                  (and (/= 0 (logand (ash 1 18) s))
                        (nth 4 (syntax-ppss (- p 1))))
-                  (and (/= 0 (logand (lsh 1 19) s))
+                  (and (/= 0 (logand (ash 1 19) s))
                        (nth 4 (syntax-ppss (- p 2)))))))))))
 
 (defun sp-point-in-string-or-comment (&optional p)
@@ -4614,10 +4614,10 @@ If the point is not inside a quoted string, return nil."
                                     (and (eq (sp-syntax-after pp) ?>)
                                          (not (eq (char-after pp) ?\n)))
                                     (/= (logand
-                                         (lsh 1 18)
+                                         (ash 1 18)
                                          (car (syntax-after pp))) 0)
                                     (/= (logand
-                                         (lsh 1 19)
+                                         (ash 1 19)
                                          (car (syntax-after pp))) 0)))
                        (backward-char 1)))
                    (point))))
@@ -8011,7 +8011,7 @@ Examples:
               (backward-char))
             ;; skip characters which are symbols with prefix flag
             (while (and (not (eobp))
-                        (/= 0 (logand (lsh 1 20) (car (syntax-after (point))))))
+                        (/= 0 (logand (ash 1 20) (car (syntax-after (point))))))
               (forward-char 1))
             (setq n (1- n)))
         (sp-forward-symbol n)))))
